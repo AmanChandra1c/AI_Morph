@@ -13,17 +13,11 @@ const CreatePost = () => {
     prompt: '',
     photo: '',
   });
+
   
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imageCount, setImageCount] = useState(0);
-  
-  useEffect(() => {
-    const count = localStorage.getItem('imageCount');
-    if (count) {
-      setImageCount(parseInt(count, 10));
-    }
-  }, []);
+
   const apiKey = import.meta.env.HF_API_KEY;
   const cloudApiKey = import.meta.env.CLOUD_API_KEY;
 
@@ -47,8 +41,6 @@ const CreatePost = () => {
         );
         const data = await response.json();
         setForm({ ...form, photo: data.photo });
-        setImageCount(imageCount + 1);
-        localStorage.setItem('imageCount', imageCount + 1);
       } catch (error) {
         alert(error);
       } finally {
@@ -108,6 +100,7 @@ const CreatePost = () => {
     checkToken();
   }, [navigate]);
 
+  const user = JSON.parse(localStorage.getItem("user"));  
   return (
     <section className="max-w-7xl mx-auto">
       <div className="justify-center text-center">
@@ -134,8 +127,7 @@ const CreatePost = () => {
             labelName="Your Name"
             type="text"
             name="name"
-            placeholder="Ex. AMAN"
-            value={form.name}
+            value={user.firstName}
             handleChange={handleChange}
           />
 
