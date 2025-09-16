@@ -32,12 +32,14 @@ const CreatePost = () => {
         }
 
         setGeneratingImg(true);
+        const apiKey = import.meta.env.HF_API_KEY;
+        console.log(apiKey)
         const response = await fetch(
           "http://localhost:8000/api/v1/imgGenerate",
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer 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`,
+              Authorization: `Bearer ${apiKey}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -71,7 +73,7 @@ const CreatePost = () => {
         const response = await fetch("http://localhost:8000/api/v1/post", {
           method: "POST",
           headers: {
-            Authorization: `Bearer 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`,
+            Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(form),
@@ -104,8 +106,8 @@ const CreatePost = () => {
         {/* <h1 className="font-extrabold text-[#222328] text-4xl sm:text-5xl mb-4">Create AI Images</h1>
         <p className="text-[#666e75] text-lg max-w-md mx-auto">Unleash the power of our AI model from Hugging Face to turn your wildest ideas into stunning visual creations. Share your imagination with the community and bring your dreams to life!</p> */}
 
-        <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">Create <mark class="px-2 text-white bg-blue-600 rounded dark:bg-blue-500">AI</mark> Images</h1>
-        <p class="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Unleash the power of our AI model from Hugging Face to turn your wildest ideas into stunning visual creations. Share your imagination with the community and bring your dreams to life!</p>
+        <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">Create <mark class="px-2 text-white bg-blue-600 rounded dark:bg-blue-500">AI</mark> Images</h1>
+        <p className="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Unleash the power of our AI model from Hugging Face to turn your wildest ideas into stunning visual creations. Share your imagination with the community and bring your dreams to life!</p>
       </div>
 
       <form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
