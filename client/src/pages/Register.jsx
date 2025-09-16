@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios"
-import {useNavigate} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 
 
 const Register = () => {
@@ -12,6 +12,8 @@ const Register = () => {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,13 +22,33 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); 
     const response = await axios.post("http://localhost:8000/api/v1/create-user", user,{
       withCredentials: true,
     });
     localStorage.setItem("token", response.data.token);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
     
     if (response.status === 200) navigate("/");
   };
+  useEffect(() =>{
+      const token = localStorage.getItem("token");
+      if(token){
+        axios
+          .get("http://localhost:8000/api/v1/get-user", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((res) => {
+            localStorage.setItem("user", JSON.stringify(res.data));
+            navigate("/"); // redirect after success
+          })
+          .catch((err) => {
+            console.error("Invalid token:", err);
+            localStorage.removeItem("token"); // clear bad token
+          });
+      }
+    }, [navigate]);
+
   return (
     <>
       <div className="flex items-center justify-center ">
@@ -101,12 +123,15 @@ const Register = () => {
               </button>
             </div>
 
-            
-
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+              disabled={isLoading}
+              className={`w-full bg- text-white py-2 rounded-lg ${
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } transition`}
             >
               Register
             </button>
@@ -114,10 +139,7 @@ const Register = () => {
 
           {/* Already have an account */}
           <p className="text-sm text-gray-600 text-center mt-4">
-            Already have an account?{" "}
-            <a href="/login" className="text-blue-500 hover:underline">
-              Login
-            </a>
+            Already have an account? <Link className="text-blue-500" to="/login">login</Link>
           </p>
         </div>
       </div>

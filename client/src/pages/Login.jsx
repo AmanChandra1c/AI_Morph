@@ -1,8 +1,8 @@
 // src/pages/Login.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react"; 
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [user, setUser] = useState({
@@ -11,23 +11,44 @@ export default function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
-  console.log(user);
   
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); 
      const response = await axios.post(
        "http://localhost:8000/api/v1/login-user",user,{
          withCredentials: true,
        }
      );
-    localStorage.setItem("token", response.data.token);    
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
+
     if (response.status === 200) navigate("/");
   };
 
+  useEffect(() =>{
+    const token = localStorage.getItem("token");
+    if(token){
+      axios
+        .get("http://localhost:8000/api/v1/get-user", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          localStorage.setItem("user", JSON.stringify(res.data));
+          navigate("/"); // redirect after success
+        })
+        .catch((err) => {
+          console.error("Invalid token:", err);
+          localStorage.removeItem("token"); // clear bad token
+        });
+    }
+  }, [navigate])
 
   return (
     <div className="flex items-center justify-center px-4">
@@ -77,7 +98,9 @@ export default function Login() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+            disabled={isLoading}
+            className={`w-full bg- text-white py-2 rounded-lg ${
+            isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"} transition`}
           >
             Login
           </button>
@@ -86,9 +109,7 @@ export default function Login() {
         {/* Register redirect */}
         <p className="text-sm text-gray-600 text-center mt-4">
           Don’t have an account?{" "}
-          <a href="/register" className="text-blue-500 hover:underline">
-            Register
-          </a>
+          <Link className="text-blue-500" to="/register">Register</Link>
         </p>
       </div>
     </div>

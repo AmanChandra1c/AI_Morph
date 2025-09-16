@@ -6,7 +6,9 @@ import postRoutes from "./routes/postRoutes.js";
 import imgGenerateRoutes from "./routes/imgGenerateRoutes.js";
 import createUserRoutes from "./routes/createUserRoutes.js"
 import logInUserRoutes from "./routes/logInUserRoutes.js";
+import getUser from "./routes/getUser.js"
 import cookieParser from "cookie-parser";
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +26,7 @@ app.use("/api/v1/post", postRoutes);
 app.use("/api/v1/imgGenerate", imgGenerateRoutes);
 app.use("/api/v1/create-user", createUserRoutes);
 app.use("/api/v1/login-user", logInUserRoutes);
+app.use("/api/v1/get-user", getUser)
 
 app.get("/", async (req, res) => {
     res.send("Hello there");
