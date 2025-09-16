@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios"
+import {useNavigate} from "react-router-dom"
 
 
 const Register = () => {
@@ -11,15 +12,20 @@ const Register = () => {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };  
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("user submitted:", user);
-    const response = axios.post("http://localhost:8000/api/v1/create-user", {user: user});
+    const response = await axios.post("http://localhost:8000/api/v1/create-user", user,{
+      withCredentials: true,
+    });
+    localStorage.setItem("token", response.data.token);
+    
+    if (response.status === 200) navigate("/");
   };
   return (
     <>

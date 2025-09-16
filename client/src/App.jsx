@@ -1,11 +1,18 @@
 import React from 'react'
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes, useNavigate } from 'react-router-dom';
 import { github, logo2 } from './assets';
 import { Home, CreatePost, Register, Login } from './pages';
 
 const App = () => {
+
+  const navigate = useNavigate();
+
+  const handleLogOut = () =>{
+     localStorage.removeItem("token");
+     navigate("/login");
+  }
   return (
-    <BrowserRouter>
+    <>
       <header className="w-full flex justify-between items-center bg-white sm:px-8 py-4 px-4 border-b border-b-[#e6ebf4]">
         <Link to="/">
           <img src={logo2} alt="" className="w-14 object-contain" />
@@ -19,9 +26,21 @@ const App = () => {
             Create
           </Link>
 
-          <Link to="https://github.com/AmanChandra1c/AI_Morph" target='_blank' className='flex border-black border-2 font-medium text-white px-2 py-2 rounded-md'>
-            <img src={github} alt="git" className='w-6 h-6 mx-1' />
+          <Link
+            to="https://github.com/AmanChandra1c/AI_Morph"
+            target="_blank"
+            className="flex border-black border-2 font-medium text-white px-2 py-2 rounded-md"
+          >
+            <img src={github} alt="git" className="w-6 h-6 mx-1" />
           </Link>
+
+            <button
+              className="font-inter font-medium bg-blue-500 text-white px-4 py-2 rounded-md"
+              onClick={handleLogOut}
+            >
+              logOut
+            </button>
+            
         </div>
       </header>
 
@@ -33,7 +52,7 @@ const App = () => {
           <Route path="/create-post" element={<CreatePost />} />
         </Routes>
       </main>
-    </BrowserRouter>
+    </>
   );
 }
 

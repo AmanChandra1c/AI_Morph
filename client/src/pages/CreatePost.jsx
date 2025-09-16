@@ -3,37 +3,35 @@ import { useNavigate } from 'react-router-dom';
 import { preview } from '../assets';
 import { getRandomPrompt } from '../utils';
 import { FormField, Loader } from '../components';
+import { isTokenValid } from '../utils/validator';
 
 const CreatePost = () => {
   const navigate = useNavigate();
+  
   const [form, setForm] = useState({
     name: '',
     prompt: '',
     photo: '',
   });
-
+  
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imageCount, setImageCount] = useState(0);
-
+  
   useEffect(() => {
     const count = localStorage.getItem('imageCount');
     if (count) {
       setImageCount(parseInt(count, 10));
     }
   }, []);
+  const apiKey = import.meta.env.HF_API_KEY;
+  const cloudApiKey = import.meta.env.CLOUD_API_KEY;
 
   const generateImage = async () => {
     if (form.prompt) {
       try {
-        if (imageCount >= 50) {
-          alert('You have reached the limit of 3 images per day. Please contact AMAN to generate more.');
-          return;
-        }
-
         setGeneratingImg(true);
-        const apiKey = import.meta.env.HF_API_KEY;
-        console.log(apiKey)
+
         const response = await fetch(
           "http://localhost:8000/api/v1/imgGenerate",
           {
@@ -47,9 +45,7 @@ const CreatePost = () => {
             }),
           }
         );
-
         const data = await response.json();
-        console.log(data);
         setForm({ ...form, photo: data.photo });
         setImageCount(imageCount + 1);
         localStorage.setItem('imageCount', imageCount + 1);
@@ -73,7 +69,7 @@ const CreatePost = () => {
         const response = await fetch("http://localhost:8000/api/v1/post", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${apiKey}`,
+            Authorization: `Bearer ${cloudApiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(form),
@@ -100,14 +96,36 @@ const CreatePost = () => {
     setForm({ ...form, prompt: randomPrompt });
   };
 
+  const checkToken = () => {
+    const token = localStorage.getItem("token");
+    if (!token || isTokenValid()) {
+      localStorage.removeItem("token");
+      navigate("/login");
+    }
+  }
+
+  useEffect(() => {
+    checkToken();
+  }, [navigate]);
+
   return (
     <section className="max-w-7xl mx-auto">
       <div className="justify-center text-center">
         {/* <h1 className="font-extrabold text-[#222328] text-4xl sm:text-5xl mb-4">Create AI Images</h1>
         <p className="text-[#666e75] text-lg max-w-md mx-auto">Unleash the power of our AI model from Hugging Face to turn your wildest ideas into stunning visual creations. Share your imagination with the community and bring your dreams to life!</p> */}
 
-        <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">Create <mark class="px-2 text-white bg-blue-600 rounded dark:bg-blue-500">AI</mark> Images</h1>
-        <p className="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Unleash the power of our AI model from Hugging Face to turn your wildest ideas into stunning visual creations. Share your imagination with the community and bring your dreams to life!</p>
+        <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">
+          Create{" "}
+          <mark class="px-2 text-white bg-blue-600 rounded dark:bg-blue-500">
+            AI
+          </mark>{" "}
+          Images
+        </h1>
+        <p className="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
+          Unleash the power of our AI model from Hugging Face to turn your
+          wildest ideas into stunning visual creations. Share your imagination
+          with the community and bring your dreams to life!
+        </p>
       </div>
 
       <form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
@@ -160,25 +178,33 @@ const CreatePost = () => {
         <div className="mt-5 flex gap-5">
           <button
             type="button"
-            onClick={generateImage}
-            className={`text-white bg-gradient-to-r from-[#4CAF50] to-[#45A249] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center focus:outline-none transition-all duration-300 ${generatingImg ? 'cursor-not-allowed opacity-70' : 'hover:opacity-90'}`}
+            onClick={() => {
+              generateImage();
+              checkToken();
+            }}
+            className={`text-white bg-gradient-to-r from-[#4CAF50] to-[#45A249] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center focus:outline-none transition-all duration-300 ${
+              generatingImg
+                ? "cursor-not-allowed opacity-70"
+                : "hover:opacity-90"
+            }`}
             disabled={generatingImg}
           >
-            {generatingImg ? 'Generating...' : 'Generate'}
+            {generatingImg ? "Generating..." : "Generate"}
           </button>
         </div>
 
-
         <div className="mt-10">
           <p className="mt-2 text-[#666e75] text-[14px]">
-            <strong>Ready to showcase your creation?</strong> Share your imaginative image with the community!
+            <strong>Ready to showcase your creation?</strong> Share your
+            imaginative image with the community!
           </p>
           <button
             type="submit"
+            onClick={checkToken}
             className={`mt-4 text-white bg-gradient-to-r from-[#3B82F6] to-[#2563EB] font-medium rounded-md text-sm w-full sm:w-auto px-6 py-3 focus:outline-none transition-all duration-300 hover:opacity-90 transform hover:scale-105`}
             disabled={loading}
           >
-            {loading ? 'Sharing...' : 'Share with the Community'}
+            {loading ? "Sharing..." : "Share with the Community"}
           </button>
         </div>
       </form>
