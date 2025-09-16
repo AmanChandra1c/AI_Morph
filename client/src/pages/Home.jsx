@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card, FormField, Loader } from '../components'
+import { useNavigate } from 'react-router-dom';
+import { isTokenValid } from '../utils/validator';
 
 const RenderCards = ({ data, title }) => {
     if (data?.length > 0) {
@@ -19,6 +21,7 @@ const Home = () => {
     const [searchText, setSearchText] = useState('');
     const [searchTimeout, setSearchTimeout] = useState(null);
     const [searchedResults, setSearchedResults] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -57,6 +60,13 @@ const Home = () => {
             }, 500),
         );
     };
+    useEffect(() => {
+            const token = localStorage.getItem("token");
+            if (!token || isTokenValid()) {
+              localStorage.removeItem("token");
+              navigate("/login");
+            }
+          }, [navigate]);
 
     return (
         <section className='max-w-7xl mx-auto'>
@@ -87,7 +97,7 @@ const Home = () => {
             <div className='mt-10'>
                 {loading ? (
                     <div className='flex justify-center items-center'>
-                        <Loader />
+                        <Loader />  
                     </div>
                 ) : (
                     <>
