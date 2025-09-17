@@ -3,7 +3,8 @@ import { download } from '../assets';
 import { downloadImage } from '../utils';
 
 const Card = ({ _id, name, prompt, photo }) => (
-  <div className="rounded-xl group relative shadow-card hover:shadow-cardhover card">
+
+  <div className="rounded-xl group relative shadow-card hover:shadow-cardhover cursor-pointer card">   
     <img
       className="w-full h-auto object-cover rounded-xl"
       src={photo}
@@ -13,17 +14,25 @@ const Card = ({ _id, name, prompt, photo }) => (
       <p className="text-white text-sm overflow-y-auto prompt">{prompt}</p>
       <div className="mt-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 flex justify-center items-center bg-green-700 rounded-full text-white text-sm font-semibold">{name[0]}</div>
+          <div className="w-10 h-10 flex justify-center items-center bg-green-700 rounded-full text-white text-sm font-semibold">
+            {name[0]}
+          </div>
           <p className="text-gray-300 text-sm">{name}</p>
         </div>
-        <button type="button" onClick={() => downloadImage(_id, photo)} className="outline-none bg-transparent border-none">
+        <button
+          type="button"
+          onClick={() => downloadImage(_id, photo)}
+          className="outline-none bg-transparent border-none"
+        >
           <span className="sr-only">Download Image</span>
-          <img src={download} alt="download" className="w-6 h-6 object-contain invert" />
+          <img
+            src={download}
+            alt="download"
+            className="w-6 h-6 object-contain invert"
+          />
         </button>
       </div>
     </div>
-
-
   </div>
 );
 

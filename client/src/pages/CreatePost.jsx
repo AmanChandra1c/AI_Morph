@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { preview } from '../assets';
 import { getRandomPrompt } from '../utils';
-import { FormField, Loader } from '../components';
+import { FormField, ImageView, Loader } from '../components';
 import { isTokenValid } from '../utils/validator';
 
 const CreatePost = () => {
@@ -17,6 +17,8 @@ const CreatePost = () => {
   
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const apiKey = import.meta.env.HF_API_KEY;
   const cloudApiKey = import.meta.env.CLOUD_API_KEY;
@@ -100,6 +102,16 @@ const CreatePost = () => {
     checkToken();
   }, [navigate]);
 
+  const handleClick = (post) => {
+    setSelectedPost(post);
+    setIsModalOpen(true);
+  };
+
+   const handleClickModel = () => {
+     setIsModalOpen(false);
+     selectedPost(null);
+   };
+
   const user = JSON.parse(localStorage.getItem("user"));  
   return (
     <section className="max-w-7xl mx-auto">
@@ -145,9 +157,14 @@ const CreatePost = () => {
           <div className="relative bg-gradient-to-b from-[#E2E8F0] to-[#F0F4F8] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg">
             {form.photo ? (
               <img
+                onClick={() => {
+                  handleClick(form), setIsModalOpen(true),
+                  console.log(form);
+                  
+                }}
                 src={form.photo}
                 alt={form.prompt}
-                className="w-full h-full object-cover rounded-lg"
+                className="w-full h-full object-cover rounded-lg cursor-pointer"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center opacity-40 rounded-lg">
@@ -200,6 +217,7 @@ const CreatePost = () => {
           </button>
         </div>
       </form>
+      <ImageView isOpen={isModalOpen} onClose={handleClickModel } post={selectedPost} />
     </section>
   );
 };
