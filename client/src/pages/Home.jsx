@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { Card, FormField, Loader } from '../components'
+import { Card, FormField, ImageView, Loader } from '../components'
 import { useNavigate } from 'react-router-dom';
 import { isTokenValid } from '../utils/validator';
 
-const RenderCards = ({ data, title }) => {
+const RenderCards = ({ data, title, onCardClick }) => {
     if (data?.length > 0) {
-        return (
-            data.map((post) => <Card key={post._id} {...post} />)
-        );
+        return data.map((post) => (
+          <div
+            key={post._id}
+            onClick={() => onCardClick(post)}
+          >
+            <Card {...post} />
+          </div>
+        ));
     }
 
     return (
@@ -21,6 +26,9 @@ const Home = () => {
     const [searchText, setSearchText] = useState('');
     const [searchTimeout, setSearchTimeout] = useState(null);
     const [searchedResults, setSearchedResults] = useState(null);
+    const [selectedPost, setSelectedPost] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,63 +76,83 @@ const Home = () => {
             }
           }, [navigate]);
 
+    const handleClick = (post) =>{        
+        setSelectedPost(post);
+        setIsModalOpen(true);
+    }
+
+    const handleClickModel = () =>{
+        setIsModalOpen(false);
+        setSelectedPost(null);
+    }
     return (
-        <section className='max-w-7xl mx-auto'>
-            <div className='justify-center text-center'>
-                {/* <h1 className='font-extrabold text-[#222328] text-2xl sm:text-5xl'>Text-to-Image Generator</h1>
-                <p className='mt-3 text-[#666e75]  text-[16px]'>
-                Dive into a world of imagination with our Text-to-Image Generator. Explore captivating visuals crafted effortlessly. Click "Create" to unleash your creativity!
-                </p> */}
+      <section className="max-w-7xl mx-auto">
+        <div className="justify-center text-center">
+          <h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-black md:text-5xl lg:text-6xl">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
+              Text-to-Image
+            </span>{" "}
+            AI Generator.
+          </h1>
+          <p className="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
+            Dive into a world of imagination with our Text-to-Image Generator.
+            Explore captivating visuals crafted effortlessly. Click "Create" to
+            unleash your creativity!
+          </p>
+        </div>
 
+        <div className="mt-14">
+          <FormField
+            labelName="Search Posts"
+            type="text"
+            name="text"
+            placeholder="Search something..."
+            value={searchText}
+            handleChange={handleSearchChange}
+            className="rounded-full border-2 border-blue-500 px-5 py-3 w-full text-gray-800 placeholder-gray-500 focus:outline-none focus:border-purple-600 transition-all duration-300 ease-in-out"
+          />
+        </div>
 
-                <h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-black md:text-5xl lg:text-6xl"><span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Text-to-Image</span> AI Generator.</h1>
-                <p className="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">Dive into a world of imagination with our Text-to-Image Generator. Explore captivating visuals crafted effortlessly. Click "Create" to unleash your creativity!</p>
+        <div className="mt-10">
+          {loading ? (
+            <div className="flex justify-center items-center">
+              <Loader />
             </div>
+          ) : (
+            <>
+              {searchText && (
+                <h2 className="font-medium text-xl mb-3 text-[#666e75] ">
+                  Showing results for{" "}
+                  <span className="text-[#222328]">{searchText}</span>{" "}
+                </h2>
+              )}
 
-            <div className='mt-14'>
-                <FormField
-                    labelName="Search Posts"
-                    type="text"
-                    name="text"
-                    placeholder="Search something..."
-                    value={searchText}
-                    handleChange={handleSearchChange}
-                    className="rounded-full border-2 border-blue-500 px-5 py-3 w-full text-gray-800 placeholder-gray-500 focus:outline-none focus:border-purple-600 transition-all duration-300 ease-in-out"
-                />
-            </div>
-
-
-            <div className='mt-10'>
-                {loading ? (
-                    <div className='flex justify-center items-center'>
-                        <Loader />  
-                    </div>
+              <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
+                {searchText ? (
+                  <RenderCards
+                    data={searchedResults}
+                    title="No Search Results Found"
+                    onCardClick={handleClick}
+                  />
                 ) : (
-                    <>
-                        {searchText && (
-                            <h2 className='font-medium text-xl mb-3 text-[#666e75] '>Showing results for <span className='text-[#222328]'>{searchText}</span> </h2>
-                        )}
-
-                        <div className='grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3'>
-                            {searchText ? (
-                                <RenderCards
-                                    data={searchedResults}
-                                    title="No Search Results Found"
-                                />
-                            ) : (
-                                <RenderCards
-                                    data={allPosts}
-                                    title="No Posts Yet"
-                                />
-                            )}
-
-                        </div>
-                    </>
+                  <RenderCards
+                    data={allPosts}
+                    title="No Posts Yet"
+                    onCardClick={handleClick}
+                  />
                 )}
-            </div>
+              </div>
+            </>
+          )}
+        </div>
 
-        </section>
-    )
+        <ImageView
+          isOpen={isModalOpen}
+          onClose={handleClickModel}
+          post={selectedPost}
+        />
+      </section>
+    );
 }
 
 export default Home
