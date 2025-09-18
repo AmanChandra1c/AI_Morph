@@ -63,7 +63,7 @@ const ImageView = ({ isOpen, onClose, post }) => {
             src={post.photo}
             width={650}
             alt={post.prompt || "Generated image"}
-            className={`max-w-full max-h-full object-contain rounded-lg shadow-lg  transition duration-300 ${
+            className={`max-w-full max-h-full object-contain rounded-lg shadow-lg transition duration-300 ${
               hovered ? "blur-sm brightness-75" : ""
             }`}
           />
@@ -72,7 +72,12 @@ const ImageView = ({ isOpen, onClose, post }) => {
           <button
             onMouseEnter={() => setHovered(true)}
             type="button"
-            onClick={() => downloadImage(post._id ? post._id : "AI_Morph"+post.prompt, post.photo)}
+            onClick={() =>
+              downloadImage(
+                post._id ? post._id : "AI_Morph" + post.prompt,
+                post.photo
+              )
+            }
             className="outline-none bg-transparent border-none absolute top-1/2 left-1/2 -translate-x-[50%] -translate-y-[50%] shadow-md transition duration-300 "
           >
             <img
@@ -85,8 +90,24 @@ const ImageView = ({ isOpen, onClose, post }) => {
 
         {/* Prompt/Details Section: Displays the prompt text below the image */}
         {post.prompt && (
-          <div className="flex-shrink-0 p-4 text-center bg-black/30">
+          <div className="flex-shrink-0  max-sm:flex items-center justify-between p-4 text-center bg-black/30">
             <p className="text-gray-200 text-sm md:text-base">{post.prompt}</p>
+            <button
+              type="button"
+              onClick={() =>
+                downloadImage(
+                  post._id ? post._id : "AI_Morph" + post.prompt,
+                  post.photo
+                )
+              }
+              className="outline-none md:hidden bg-transparent border-none shadow-md transition duration-300 "
+            >
+              <img
+                src={download}
+                alt="download"
+                className="w-6 h-6 object-contain invert"
+              />
+            </button>
           </div>
         )}
       </div>

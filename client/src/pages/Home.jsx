@@ -7,6 +7,7 @@ const RenderCards = ({ data, title, onCardClick }) => {
     if (data?.length > 0) {
         return data.map((post) => (
           <div
+            className="rounded-xl group relative shadow-card hover:shadow-cardhover cursor-pointer card"
             key={post._id}
             onClick={() => onCardClick(post)}
           >

@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Link, Route, Routes, useNavigate } from 'react-router-dom';
 import { github, logo2 } from './assets';
-import { Home, CreatePost, Register, Login } from './pages';
+import { Home, CreatePost, Register, Login, Profile } from './pages';
 import { isTokenValid } from './utils/validator';
 
 const App = () => {
@@ -25,20 +25,31 @@ const App = () => {
 
         <div className="flex gap-x-4">
           <Link
+            to="/profile"
+            className={`font-inter font-medium ${
+              checkToken ? "" : "hidden"
+            } bg-blue-500 text-white px-4 py-2 rounded-md`}
+          >
+            profile
+          </Link>
+          <Link
             to="/create-post"
-            className={`font-inter font-medium ${checkToken ? "" : "hidden"} bg-blue-500 text-white px-4 py-2 rounded-md`}
+            className={`font-inter font-medium ${
+              checkToken ? "" : "hidden"
+            } bg-blue-500 text-white px-4 py-2 rounded-md`}
           >
             Create
           </Link>
 
+          <button
+            className={`font-inter font-medium ${
+              checkToken ? "" : "hidden"
+            } bg-blue-500 text-white px-4 py-2 rounded-md`}
+            onClick={handleLogOut}
+          >
+            logOut
+          </button>
 
-            <button
-              className={`font-inter font-medium ${checkToken ? "" : "hidden"} bg-blue-500 text-white px-4 py-2 rounded-md`}
-              onClick={handleLogOut}
-            >
-              logOut
-            </button>
-            
           <Link
             to="https://github.com/AmanChandra1c/AI_Morph"
             target="_blank"
@@ -55,6 +66,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </main>
     </>
