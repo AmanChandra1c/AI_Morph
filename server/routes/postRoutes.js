@@ -38,7 +38,7 @@ router.route('/').post(async (req, res) => {
              });
          }
 
-        let { name, prompt, photo } = req.body;
+        let { name, prompt, photo, admin } = req.body;
 
         const photoUrl = await cloudinary.uploader.upload(photo, {
           resource_type: "image",
@@ -48,10 +48,9 @@ router.route('/').post(async (req, res) => {
           name,
           prompt,
           photo: photoUrl.secure_url,
+          admin,
         });
 
-
-        
         res.status(200).json({ success: true, data: newPost });
     } catch (err) {
         console.error('Post creation error:', err); 

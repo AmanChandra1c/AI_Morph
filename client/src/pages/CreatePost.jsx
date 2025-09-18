@@ -6,12 +6,15 @@ import { FormField, ImageView, Loader } from '../components';
 import { isTokenValid } from '../utils/validator';
 
 const CreatePost = () => {
+  
+  const user = JSON.parse(localStorage.getItem("user"));  
   const navigate = useNavigate();
   
   const [form, setForm] = useState({
-    name: '',
+    name: user.firstName,
     prompt: '',
     photo: '',
+    admin: '',
   });
 
   
@@ -42,7 +45,7 @@ const CreatePost = () => {
           }
         );
         const data = await response.json();
-        setForm({ ...form, photo: data.photo });
+        setForm({ ...form, photo: data.photo, admin: user._id});
       } catch (error) {
         alert(error);
       } finally {
@@ -112,13 +115,9 @@ const CreatePost = () => {
      selectedPost(null);
    };
 
-  const user = JSON.parse(localStorage.getItem("user"));  
   return (
     <section className="max-w-7xl mx-auto">
       <div className="justify-center text-center">
-        {/* <h1 className="font-extrabold text-[#222328] text-4xl sm:text-5xl mb-4">Create AI Images</h1>
-        <p className="text-[#666e75] text-lg max-w-md mx-auto">Unleash the power of our AI model from Hugging Face to turn your wildest ideas into stunning visual creations. Share your imagination with the community and bring your dreams to life!</p> */}
-
         <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-black">
           Create{" "}
           <mark class="px-2 text-white bg-blue-600 rounded dark:bg-blue-500">
@@ -136,11 +135,8 @@ const CreatePost = () => {
       <form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-5">
           <FormField
-            labelName="Your Name"
-            type="text"
             name="name"
             value={user.firstName}
-            handleChange={handleChange}
           />
 
           <FormField
