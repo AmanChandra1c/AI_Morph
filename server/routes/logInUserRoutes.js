@@ -63,7 +63,14 @@ router.post("/", async (req, res) => {
     res.status(200).json({
       message: "User logged in successfully",
       token,
-      user: user,
+      user: {
+        ...user.toObject(),
+        profilePicture: user.profilePicture
+          ? `data:image/png;base64,${user.profilePicture.toString(
+              "base64"
+            )}`
+          : null,
+      },
     });
   } catch (error) {
     console.error(error);

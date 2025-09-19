@@ -8,7 +8,6 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
     const { prompt } = req.body;
-    console.log(prompt);
     const hfApiKey = process.env.HF_API_KEY;
 
     const response = await fetch(
