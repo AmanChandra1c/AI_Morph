@@ -21,7 +21,14 @@ export const authMiddleware = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    req.user = user; // attach user to request
+    req.user = {
+        ...user.toObject(),
+        profilePicture: user.profilePicture
+          ? `data:image/png;base64,${user.profilePicture.toString(
+              "base64"
+            )}`
+          : null,
+      },
     next();
   } catch (error) {
     console.error("Auth error:", error);

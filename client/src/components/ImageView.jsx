@@ -18,10 +18,6 @@ const ImageView = ({ isOpen, onClose, post }) => {
       aria-modal="true"
       role="dialog"
     >
-      {/* Modal container with a pop-in animation. 
-        A dark, semi-transparent, blurred background gives it a modern look.
-        onClick is stopped from propagating to the overlay, so clicking the modal doesn't close it.
-      */}
       <div
         className="bg-white-0 backdrop-blur-lg w-full max-w-3xl max-h-[95vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden cursor-auto transition-transform duration-300 ease-in-out"
         onClick={(e) => e.stopPropagation()}
