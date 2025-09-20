@@ -8,7 +8,7 @@ import createUserRoutes from "./routes/createUserRoutes.js"
 import logInUserRoutes from "./routes/logInUserRoutes.js";
 import getUser from "./routes/getUser.js"
 import getPost from "./routes/getPost.js"
-import uploadProfilePicture from "./routes/uploadProfilePicture.js";
+import profile from "./routes/profile.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -30,7 +30,7 @@ app.use("/api/v1/create-user", createUserRoutes);
 app.use("/api/v1/login-user", logInUserRoutes);
 app.use("/api/v1/get-user", getUser)
 app.use("/api/v1/get-post", getPost)
-app.use("/api/v1/profile-picture", uploadProfilePicture);
+app.use("/api/v1/profile", profile);
 
 app.get("/", async (req, res) => {
     res.send("Hello there");
