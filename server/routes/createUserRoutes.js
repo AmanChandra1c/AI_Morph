@@ -5,12 +5,13 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../mongodb/models/user.js"
 import cookieParser from "cookie-parser";
+const { verifyOTP } = await import("./sendOTP.js");
 
 dotenv.config();
 const router = express.Router();
 
 // Validation helper
-function validateUserInput({ firstName, lastName, email, password }) {
+function validateUserInput({ firstName, lastName, email, password, otp, sessionID }) {
   if (!firstName || !lastName || !email || !password) {
     return "All fields are required.";
   }
@@ -21,20 +22,27 @@ function validateUserInput({ firstName, lastName, email, password }) {
   if (password.length < 6) {
     return "Password must be at least 6 characters long.";
   }
+  if(otp.length < 6){
+    return "otp must be at least 6 characters long";
+  }
+  if(!sessionID) return "Session ID is required";
   return null;
 }
 
 // POST: Create new user
 router.post("/", async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;   
+    const { firstName, lastName, email, password, otp } = req.body;   
+    const sessionID = req.headers["session-id"];
 
-    // Validate input
+    // Validate input    
     const validationError = validateUserInput({
       firstName,
       lastName,
       email,
       password,
+      otp,
+      sessionID,
     });
     if (validationError) {
       return res.status(400).json({ error: validationError });
@@ -44,6 +52,12 @@ router.post("/", async (req, res) => {
     const isUser = await User.findOne({ email });
     if (isUser) {
       return res.status(409).json({ error: "User already exists." });
+    }
+    
+    // Verify OTP
+    const isOTPValid = await verifyOTP(otp, sessionID);
+    if (!isOTPValid) {
+      return res.status(400).json({ error: "Invalid or expired OTP." });
     }
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 16);

@@ -3,6 +3,12 @@ import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader } from "../components";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,8 +17,11 @@ const Register = () => {
     lastName: "",
     email: "",
     password: "",
+    otp: "",
   });
+  const [sessionID, setSessionID] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [count, setCount] = useState(0);
 
   const navigate = useNavigate();
 
@@ -26,7 +35,24 @@ const Register = () => {
     if (!user.firstName.trim()) {
       alert("First name is required!");
       return;
+    }else{
+      user.firstName =
+        user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1);
     }
+    if (!user.email.trim()) {
+      alert("Email is required!");
+      return;
+    }
+    if (user.password.length < 6) {
+      alert("Password must be at least 6 characters long!");
+      return;
+    }
+
+    if (user.otp.length < 6) {
+      alert("Please enter a valid OTP!");
+      return;
+    }
+
 
     setIsLoading(true);
 
@@ -38,7 +64,13 @@ const Register = () => {
           firstName: user.firstName.trim(),
           lastName: user.lastName.trim(),
         },
-        { withCredentials: true }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Session-ID": sessionID,
+          },
+          withCredentials: true,
+        }
       );
 
       localStorage.setItem("token", response.data.token);
@@ -70,6 +102,26 @@ const Register = () => {
         });
     }
   }, [navigate]);
+
+  const sendOTP = async () => {    
+    if (user.email.length < 5 ) { 
+      alert("Please enter your email!");
+      return;
+    };
+    try {
+      const res = await axios.get("http://localhost:8000/api/v1/send-otp", {
+        params: { email: user.email },
+      });
+      setSessionID(res?.data?.sessionID);
+    } catch (error) {
+      console.error("invalid OTP:", error);
+      alert(error.response?.data?.message || "Something went wrong!");
+    } finally {
+      setCount(1);
+      alert("OTP sent to your email!");
+    }
+      
+  };
 
   return (
     <>
@@ -150,6 +202,45 @@ const Register = () => {
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
+              </div>
+              <div>
+                <div
+                  className={`flex items-center ${
+                    count <= 0 ? "justify-end" : "justify-between"
+                  } mb-2`}
+                >
+                  <span
+                    className={`block text-gray-700 ${
+                      count <= 0 ? "hidden" : ""
+                    } text-sm mb-1`}
+                  >
+                    Enter OTP
+                  </span>
+                  <span
+                    className="text-blue-500 cursor-pointer underline"
+                    onClick={sendOTP}
+                  >
+                    Send OTP
+                  </span>
+                </div>
+                <div className={count <= 0 ? "hidden" : ""}>
+                  <InputOTP
+                    maxLength={6}
+                    pattern={REGEXP_ONLY_DIGITS}
+                    name="otp"
+                    value={user.otp}
+                    onChange={(value) => setUser({ ...user, otp: value })}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
               </div>
 
               {/* Submit Button */}

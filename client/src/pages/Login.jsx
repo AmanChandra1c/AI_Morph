@@ -42,7 +42,7 @@ export default function Login() {
       }
     } catch (error) {
       console.error("Login failed:", error);
-      setUser({ email: "", password: "" }); // clear inputs on error
+      setUser({ email: "", password: "" });
       alert(
         error.response?.data?.message || "Something went wrong. Try again!"
       );
@@ -60,11 +60,11 @@ export default function Login() {
         })
         .then((res) => {
           localStorage.setItem("user", JSON.stringify(res.data));
-          navigate("/"); // redirect after success
+          navigate("/");
         })
         .catch((err) => {
           console.error("Invalid token:", err);
-          localStorage.removeItem("token"); // clear bad token
+          localStorage.removeItem("token");
         });
     }
   }, [navigate]);
@@ -123,7 +123,6 @@ export default function Login() {
                   </button>
                 </div>
               </div>
-
               {/* Submit */}
               <button
                 type="submit"

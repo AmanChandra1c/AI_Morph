@@ -9,15 +9,38 @@ import logInUserRoutes from "./routes/logInUserRoutes.js";
 import getUser from "./routes/getUser.js"
 import getPost from "./routes/getPost.js"
 import profile from "./routes/profile.js";
+import sendOTP from "./routes/sendOTP.js";
 import cookieParser from "cookie-parser";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import { setSessionStore } from "./routes/sendOTP.js";
 
 dotenv.config();
+
+const store = MongoStore.create({
+  mongoUrl: "mongodb://localhost:27017/sessions",
+});
+
+setSessionStore(store);
 
 const app = express();
 app.use(
   cors({
     origin: "http://localhost:5173", 
     credentials: true,
+  })
+);
+app.use(
+  session({
+    secret: process.env.JWT_SECRET  ,
+    resave: false,
+    saveUninitialized: false,
+    store,
+    cookie: {
+      maxAge: 1000 * 60 * 15,
+      httpOnly: true,
+      secure: false,
+    },
   })
 );
 app.use(cookieParser());
@@ -31,6 +54,8 @@ app.use("/api/v1/login-user", logInUserRoutes);
 app.use("/api/v1/get-user", getUser)
 app.use("/api/v1/get-post", getPost)
 app.use("/api/v1/profile", profile);
+app.use("/api/v1/send-otp", sendOTP);
+
 
 app.get("/", async (req, res) => {
     res.send("Hello there");
