@@ -4,8 +4,10 @@ import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader } from "../components";
+import { useToast } from "@/components/ui/toaster";
 
 export default function Login() {
+  const { error: toastError, success: toastSuccess } = useToast();
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -36,16 +38,15 @@ export default function Login() {
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       if (response.status === 200) {
-        navigate("/");
-      } else {
-        setUser({ email: "", password: "" });
+        navigate("/home");
+        toastSuccess("Login successful");
+      }
+      else {
+        toastError("");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      setUser({ email: "", password: "" });
-      alert(
-        error.response?.data?.message || "Something went wrong. Try again!"
-      );
+      toastError(error.response?.data?.message || "Something went wrong.");
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +61,7 @@ export default function Login() {
         })
         .then((res) => {
           localStorage.setItem("user", JSON.stringify(res.data));
-          navigate("/");
+          navigate("/home");
         })
         .catch((err) => {
           console.error("Invalid token:", err);
@@ -77,15 +78,15 @@ export default function Login() {
         </div>
       ) : (
         <div className="flex items-center justify-center px-4">
-          <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6 sm:p-8">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          <div className="w-full max-w-md rounded-2xl p-6 sm:p-8 bg-white/5 backdrop-blur-md ring-1 ring-white/10 shadow-xl">
+            <h2 className="text-2xl font-bold text-center text-white mb-6">
               Login to Your Account
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}
               <div>
-                <label className="block text-gray-700 text-sm mb-1">
+                <label className="block text-gray-300 text-sm mb-1">
                   Email
                 </label>
                 <input
@@ -94,14 +95,14 @@ export default function Login() {
                   value={user.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500/50 outline-none"
                   placeholder="Enter your email"
                 />
               </div>
 
               {/* Password with eye toggle */}
               <div>
-                <label className="block text-gray-700 text-sm mb-1">
+                <label className="block text-gray-300 text-sm mb-1">
                   Password
                 </label>
                 <div className="relative">
@@ -111,13 +112,13 @@ export default function Login() {
                     value={user.password}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none pr-10"
+                    className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500/50 outline-none pr-10"
                     placeholder="Enter your password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-400"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -127,10 +128,10 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full bg- text-white py-2 rounded-lg ${
+                className={`w-full text-white py-2 rounded-lg ${
                   isLoading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-600"
+                    ? "bg-gray-500/50 cursor-not-allowed"
+                    : "bg-cyan-500 hover:bg-cyan-600 shadow-lg shadow-cyan-500/20"
                 } transition`}
               >
                 Login
@@ -138,9 +139,9 @@ export default function Login() {
             </form>
 
             {/* Register redirect */}
-            <p className="text-sm text-gray-600 text-center mt-4">
+            <p className="text-sm text-gray-300 text-center mt-4">
               Don’t have an account?{" "}
-              <Link className="text-blue-500" to="/register">
+              <Link className="text-cyan-400" to="/register">
                 Register
               </Link>
             </p>

@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { preview } from '../assets';
-import { getRandomPrompt } from '../utils';
-import { FormField, ImageView, Loader } from '../components';
-import { isTokenValid } from '../utils/validator';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { preview } from "../assets";
+import { getRandomPrompt } from "../utils";
+import { FormField, ImageView, Loader } from "../components";
+import { isTokenValid } from "../utils/validator";
+import { useToast } from "@/components/ui/toaster";
 
 const CreatePost = () => {
-  
-  const user = JSON.parse(localStorage.getItem("user"));  
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
-  
+  const { error: toastError, success: toastSuccess } = useToast();
   const [form, setForm] = useState({
     name: user.firstName,
-    prompt: '',
-    photo: '',
-    admin: '',
+    prompt: "",
+    photo: "",
+    admin: "",
   });
 
-  
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -45,16 +44,18 @@ const CreatePost = () => {
           }
         );
         const data = await response.json();
-        setForm({ ...form, photo: data.photo, admin: user._id});
+        toastSuccess("Image generated successfully");
+        setForm({ ...form, photo: data.photo, admin: user._id });
       } catch (error) {
-        alert(error);
+        error(String(error));
+        toastError(error.response?.data?.message || "Something went wrong.");
       } finally {
         setGeneratingImg(false);
       }
     } else {
-      alert("Please Provide a prompt")
+      info("Please Provide a prompt");
     }
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,20 +74,22 @@ const CreatePost = () => {
         });
 
         await response.json();
-        navigate("/");
+        navigate("/home");
+        toastSuccess("Post shared successfully");
       } catch (error) {
-        alert(error)
+        error(String(error));
+        toastError(error.response?.data?.message || "Something went wrong.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     } else {
-      alert("Please enter a prompt and generate an image");
+      info("Please enter a prompt and generate an image");
     }
-  }
+  };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSurpriseMe = () => {
     const randomPrompt = getRandomPrompt(form.prompt);
@@ -99,7 +102,7 @@ const CreatePost = () => {
       localStorage.removeItem("token");
       navigate("/login");
     }
-  }
+  };
 
   useEffect(() => {
     checkToken();
@@ -110,10 +113,10 @@ const CreatePost = () => {
     setIsModalOpen(true);
   };
 
-   const handleClickModel = () => {
-     setIsModalOpen(false);
-     selectedPost(null);
-   };
+  const handleClickModel = () => {
+    setIsModalOpen(false);
+    selectedPost(null);
+  };
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -134,10 +137,7 @@ const CreatePost = () => {
 
       <form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-5">
-          <FormField
-            name="name"
-            value={user.firstName}
-          />
+          <FormField name="name" value={user.firstName} />
 
           <FormField
             labelName="Prompt"
@@ -154,9 +154,7 @@ const CreatePost = () => {
             {form.photo ? (
               <img
                 onClick={() => {
-                  handleClick(form), setIsModalOpen(true),
-                  console.log(form);
-                  
+                  handleClick(form), setIsModalOpen(true), console.log(form);
                 }}
                 src={form.photo}
                 alt={form.prompt}
@@ -213,7 +211,11 @@ const CreatePost = () => {
           </button>
         </div>
       </form>
-      <ImageView isOpen={isModalOpen} onClose={handleClickModel } post={selectedPost} />
+      <ImageView
+        isOpen={isModalOpen}
+        onClose={handleClickModel}
+        post={selectedPost}
+      />
     </section>
   );
 };

@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader } from "../components";
+import { useToast } from "@/components/ui/toaster";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
   InputOTP,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/input-otp";
 
 const Register = () => {
+  const { error, success, info } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [user, setUser] = useState({
     firstName: "",
@@ -33,26 +35,25 @@ const Register = () => {
     e.preventDefault();
 
     if (!user.firstName.trim()) {
-      alert("First name is required!");
+      error("First name is required!");
       return;
-    }else{
+    } else {
       user.firstName =
         user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1);
     }
     if (!user.email.trim()) {
-      alert("Email is required!");
+      error("Email is required!");
       return;
     }
     if (user.password.length < 6) {
-      alert("Password must be at least 6 characters long!");
+      error("Password must be at least 6 characters long!");
       return;
     }
 
     if (user.otp.length < 6) {
-      alert("Please enter a valid OTP!");
+      error("Please enter a valid OTP!");
       return;
     }
-
 
     setIsLoading(true);
 
@@ -76,10 +77,13 @@ const Register = () => {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      if (response.status === 200) navigate("/");
+      if (response.status === 200) {
+        success("Registration successful!");
+        navigate("/home");
+      }
     } catch (error) {
       console.error("Register failed:", error);
-      alert(error.response?.data?.message || "Something went wrong!");
+      error(error.response?.data?.message || "Something went wrong!");
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +98,7 @@ const Register = () => {
         })
         .then((res) => {
           localStorage.setItem("user", JSON.stringify(res.data));
-          navigate("/"); // redirect after success
+          navigate("/home"); // redirect after success
         })
         .catch((err) => {
           console.error("Invalid token:", err);
@@ -103,11 +107,11 @@ const Register = () => {
     }
   }, [navigate]);
 
-  const sendOTP = async () => {    
-    if (user.email.length < 5 ) { 
-      alert("Please enter your email!");
+  const sendOTP = async () => {
+    if (user.email.length < 5) {
+      error("Please enter your email!");
       return;
-    };
+    }
     try {
       const res = await axios.get("http://localhost:8000/api/v1/send-otp", {
         params: { email: user.email },
@@ -115,12 +119,11 @@ const Register = () => {
       setSessionID(res?.data?.sessionID);
     } catch (error) {
       console.error("invalid OTP:", error);
-      alert(error.response?.data?.message || "Something went wrong!");
+      error(error.response?.data?.message || "Something went wrong!");
     } finally {
       setCount(1);
-      alert("OTP sent to your email!");
+      info("OTP sent to your email!");
     }
-      
   };
 
   return (
@@ -131,15 +134,15 @@ const Register = () => {
         </div>
       ) : (
         <div className="flex items-center justify-center ">
-          <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6 sm:p-8">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          <div className="w-full max-w-md rounded-2xl p-6 sm:p-8 bg-white/5 backdrop-blur-md ring-1 ring-white/10 shadow-xl">
+            <h2 className="text-2xl font-bold text-center text-white mb-6">
               Create an Account
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* First Name */}
               <div>
-                <label className="block text-gray-700 text-sm mb-1">
+                <label className="block text-gray-300 text-sm mb-1">
                   First Name
                 </label>
                 <input
@@ -148,14 +151,14 @@ const Register = () => {
                   value={user.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500/50 outline-none"
                   placeholder="Enter first name"
                 />
               </div>
 
               {/* Last Name */}
               <div>
-                <label className="block text-gray-700 text-sm mb-1">
+                <label className="block text-gray-300 text-sm mb-1">
                   Last Name
                 </label>
                 <input
@@ -163,14 +166,14 @@ const Register = () => {
                   name="lastName"
                   value={user.lastName}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500/50 outline-none"
                   placeholder="Enter last name"
                 />
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-gray-700 text-sm mb-1">
+                <label className="block text-gray-300 text-sm mb-1">
                   Email
                 </label>
                 <input
@@ -179,7 +182,7 @@ const Register = () => {
                   value={user.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500/50 outline-none"
                   placeholder="Enter email"
                 />
               </div>
@@ -192,12 +195,12 @@ const Register = () => {
                   value={user.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none pr-10"
+                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500/50 outline-none pr-10"
                   placeholder="Enter password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-400"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -210,14 +213,14 @@ const Register = () => {
                   } mb-2`}
                 >
                   <span
-                    className={`block text-gray-700 ${
+                    className={`block text-gray-300 ${
                       count <= 0 ? "hidden" : ""
                     } text-sm mb-1`}
                   >
                     Enter OTP
                   </span>
                   <span
-                    className="text-blue-500 cursor-pointer underline"
+                    className="text-cyan-400 cursor-pointer underline"
                     onClick={sendOTP}
                   >
                     Send OTP
@@ -247,10 +250,10 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full bg- text-white py-2 rounded-lg ${
+                className={`w-full text-white py-2 rounded-lg ${
                   isLoading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-600"
+                    ? "bg-gray-500/50 cursor-not-allowed"
+                    : "bg-indigo-500 hover:bg-indigo-600 shadow-lg shadow-indigo-500/20"
                 } transition`}
               >
                 Register
@@ -258,9 +261,9 @@ const Register = () => {
             </form>
 
             {/* Already have an account */}
-            <p className="text-sm text-gray-600 text-center mt-4">
+            <p className="text-sm text-gray-300 text-center mt-4">
               Already have an account?{" "}
-              <Link className="text-blue-500" to="/login">
+              <Link className="text-cyan-400" to="/login">
                 login
               </Link>
             </p>
