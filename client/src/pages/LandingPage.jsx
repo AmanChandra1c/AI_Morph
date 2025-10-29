@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Sparkles, Image, Type, LogIn, UserPlus } from "lucide-react";
 import { useEffect } from "react";
 import axios from "axios";
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_BASE = "https://ai-morph-server.onrender.com";
 
 export default function LandingPage() {
   const navigate = useNavigate();

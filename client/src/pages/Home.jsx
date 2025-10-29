@@ -40,8 +40,7 @@ const Home = () => {
       setLoading(true);
 
       try {
-        const API_BASE =
-          import.meta.env.VITE_API_URL || "http://localhost:8000";
+        const API_BASE = "https://ai-morph-server.onrender.com";
         const response = await fetch(`${API_BASE}/api/v1/post`, {
           method: "GET",
           headers: {

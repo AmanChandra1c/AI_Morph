@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Mail, Calendar, Edit, Save, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_BASE = "https://ai-morph-server.onrender.com";
 import { isTokenValid } from "../utils/validator";
 import { Card, ImageView, Loader } from "../components";
 import { useToast } from "@/components/ui/toaster";

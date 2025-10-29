@@ -7,7 +7,7 @@ import { isTokenValid } from "../utils/validator";
 import { useToast } from "@/components/ui/toaster";
 
 const CreatePost = () => {
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  const API_BASE = "https://ai-morph-server.onrender.com";
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const { error: toastError, success: toastSuccess } = useToast();

@@ -13,7 +13,7 @@ import {
 
 const Register = () => {
   const { error, success, info } = useToast();
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  const API_BASE = "https://ai-morph-server.onrender.com";
   const [showPassword, setShowPassword] = useState(false);
   const [user, setUser] = useState({
     firstName: "",
@@ -136,7 +136,6 @@ const Register = () => {
       setIsLoading(false);
     }
   };
-
 
   useEffect(() => {
     const token = localStorage.getItem("token");

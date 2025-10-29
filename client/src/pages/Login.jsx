@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/toaster";
 
 export default function Login() {
   const { error: toastError, success: toastSuccess } = useToast();
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  const API_BASE = "https://ai-morph-server.onrender.com";
   const [user, setUser] = useState({
     email: "",
     password: "",
