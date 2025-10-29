@@ -1,13 +1,23 @@
 import mongoose from "mongoose";
 
 const connectDB = (url) => {
-    //helpful in working with search
-    mongoose.set("strictQuery", true);
+  mongoose.set("strictQuery", true);
 
-    mongoose
-      .connect(process.env.MONGODB_URL)
-      .then(() => console.log("MongoDB Connected"))
-      .catch((err) => console.log(err));
+  // Add TLS options
+  const options = {
+    tls: true,
+    tlsAllowInvalidCertificates: false,
+    tlsAllowInvalidHostnames: false,
+    serverSelectionTimeoutMS: 10000,
+  };
+
+  mongoose
+    .connect(url, options)
+    .then(() => console.log("MongoDB Connected"))
+    .catch((err) => {
+      console.error("MongoDB Connection Error:", err.message);
+      process.exit(1);
+    });
 };
 
 export default connectDB;
