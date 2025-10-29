@@ -37,7 +37,7 @@ const Profile = () => {
     const token = localStorage.getItem("token");
     if (token || isTokenValid) {
       axios
-        .get("http://localhost:8000/api/v1/get-user", {
+        .get("https://ai-morph-ju7z.onrender.com/api/v1/get-user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -61,7 +61,7 @@ const Profile = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/v1/get-post/",
+          "https://ai-morph-ju7z.onrender.com/api/v1/get-post/",
           { params: { id: user._id } }
         );
 
@@ -173,7 +173,7 @@ const Profile = () => {
 
       // Make API call
       const response = await axios.post(
-        "http://localhost:8000/api/v1/profile/",
+        "https://ai-morph-ju7z.onrender.com/api/v1/profile/",
         formData,
         {
           headers: {
@@ -230,7 +230,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        "http://localhost:8000/api/v1/change-password",
+        "https://ai-morph-ju7z.onrender.com/api/v1/change-password",
         {
           id: user._id,
           currentPassword: passwordData.currentPassword,
