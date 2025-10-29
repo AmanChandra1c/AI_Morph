@@ -27,6 +27,7 @@ const app = express();
 app.use(
   cors({
     origin: "https://ai-morph-rdn9.onrender.com", 
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
