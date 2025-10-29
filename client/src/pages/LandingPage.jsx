@@ -11,7 +11,7 @@ export default function LandingPage() {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("http://localhost:8000/api/v1/get-user", {
+        .get("https://ai-morph-ju7z.onrender.com/api/v1/get-user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {

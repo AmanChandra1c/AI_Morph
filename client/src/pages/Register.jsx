@@ -59,7 +59,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/create-user",
+        "https://ai-morph-ju7z.onrender.com/api/v1/create-user",
         {
           ...user,
           firstName: user.firstName.trim(),
@@ -93,7 +93,7 @@ const Register = () => {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("http://localhost:8000/api/v1/get-user", {
+        .get("https://ai-morph-ju7z.onrender.com/api/v1/get-user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -113,9 +113,12 @@ const Register = () => {
       return;
     }
     try {
-      const res = await axios.get("http://localhost:8000/api/v1/send-otp", {
-        params: { email: user.email },
-      });
+      const res = await axios.get(
+        "https://ai-morph-ju7z.onrender.com/api/v1/send-otp",
+        {
+          params: { email: user.email },
+        }
+      );
       setSessionID(res?.data?.sessionID);
     } catch (error) {
       console.error("invalid OTP:", error);

@@ -27,7 +27,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/login-user",
+        "https://ai-morph-ju7z.onrender.com/api/v1/login-user",
         user,
         {
           withCredentials: true,
@@ -56,7 +56,7 @@ export default function Login() {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("http://localhost:8000/api/v1/get-user", {
+        .get("https://ai-morph-ju7z.onrender.com/api/v1/get-user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {

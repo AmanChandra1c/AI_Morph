@@ -31,7 +31,7 @@ const CreatePost = () => {
         setGeneratingImg(true);
 
         const response = await fetch(
-          "http://localhost:8000/api/v1/imgGenerate",
+          "https://ai-morph-ju7z.onrender.com/api/v1/imgGenerate",
           {
             method: "POST",
             headers: {
@@ -64,14 +64,17 @@ const CreatePost = () => {
       setLoading(true);
 
       try {
-        const response = await fetch("http://localhost:8000/api/v1/post", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${cloudApiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-        });
+        const response = await fetch(
+          "https://ai-morph-ju7z.onrender.com/api/v1/post",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${cloudApiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(form),
+          }
+        );
 
         await response.json();
         navigate("/home");
