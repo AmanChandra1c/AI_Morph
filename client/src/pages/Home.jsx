@@ -40,15 +40,14 @@ const Home = () => {
       setLoading(true);
 
       try {
-        const response = await fetch(
-          "https://ai-morph-ju7z.onrender.com/api/v1/post",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const API_BASE =
+          import.meta.env.VITE_API_URL || "http://localhost:8000";
+        const response = await fetch(`${API_BASE}/api/v1/post`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (response.ok) {
           const result = await response.json();

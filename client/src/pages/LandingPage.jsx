@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Sparkles, Image, Type, LogIn, UserPlus } from "lucide-react";
 import { useEffect } from "react";
 import axios from "axios";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function LandingPage() {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("https://ai-morph-ju7z.onrender.com/api/v1/get-user", {
+        .get(`${API_BASE}/api/v1/get-user`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {

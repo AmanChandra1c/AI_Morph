@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/toaster";
 
 export default function Login() {
   const { error: toastError, success: toastSuccess } = useToast();
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -26,13 +27,9 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://ai-morph-ju7z.onrender.com/api/v1/login-user",
-        user,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post(`${API_BASE}/api/v1/login-user`, user, {
+        withCredentials: true,
+      });
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
@@ -40,13 +37,16 @@ export default function Login() {
       if (response.status === 200) {
         navigate("/home");
         toastSuccess("Login successful");
-      }
-      else {
-        toastError("");
+      } else {
+        toastError("Login failed");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      toastError(error.response?.data?.message || "Something went wrong.");
+      const msg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Invalid email or password";
+      toastError(msg);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +56,7 @@ export default function Login() {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("https://ai-morph-ju7z.onrender.com/api/v1/get-user", {
+        .get(`${API_BASE}/api/v1/get-user`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {

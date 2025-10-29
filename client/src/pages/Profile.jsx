@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Mail, Calendar, Edit, Save, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 import { isTokenValid } from "../utils/validator";
 import { Card, ImageView, Loader } from "../components";
 import { useToast } from "@/components/ui/toaster";
@@ -37,7 +38,7 @@ const Profile = () => {
     const token = localStorage.getItem("token");
     if (token || isTokenValid) {
       axios
-        .get("https://ai-morph-ju7z.onrender.com/api/v1/get-user", {
+        .get(`${API_BASE}/api/v1/get-user`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -60,10 +61,9 @@ const Profile = () => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          "https://ai-morph-ju7z.onrender.com/api/v1/get-post/",
-          { params: { id: user._id } }
-        );
+        const response = await axios.get(`${API_BASE}/api/v1/get-post/`, {
+          params: { id: user._id },
+        });
 
         setAllPosts(response.data?.reverse() || []);
       } catch (error) {
@@ -173,7 +173,7 @@ const Profile = () => {
 
       // Make API call
       const response = await axios.post(
-        "https://ai-morph-ju7z.onrender.com/api/v1/profile/",
+        `${API_BASE}/api/v1/profile/`,
         formData,
         {
           headers: {
@@ -230,7 +230,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        "https://ai-morph-ju7z.onrender.com/api/v1/change-password",
+        `${API_BASE}/api/v1/change-password`,
         {
           id: user._id,
           currentPassword: passwordData.currentPassword,

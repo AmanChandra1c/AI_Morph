@@ -3,12 +3,28 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Prefer SMTP config if provided (production), fallback to Gmail service
+const isProduction = process.env.NODE_ENV === "production";
+
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: Number(process.env.SMTP_PORT) === 465, // true for 465, false for other ports
   auth: {
-    user: process.env.GMAIL,
-    pass: process.env.GMAIL_PASSWORD,
+    user: process.env.SMTP_USER || process.env.GMAIL,
+    pass: process.env.SMTP_PASS || process.env.GMAIL_PASSWORD,
   },
+  tls: {
+    // Prevent issues with self-signed certs in production
+    rejectUnauthorized: isProduction,
+  },
+  pool: true, // keeps connections open for multiple emails
+  maxConnections: 5, // limit concurrent connections
+  maxMessages: 100, // max messages per connection
+  rateDelta: 1000, // rate limit: 1 second
+  rateLimit: 5, // max 5 emails per second
+  logger: false, // log only in development
+  debug: false, // debug only in development
 });
 
 const sendOTPByEmail = async (email, otp) => {

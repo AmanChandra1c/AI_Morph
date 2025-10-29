@@ -7,6 +7,7 @@ import { isTokenValid } from "../utils/validator";
 import { useToast } from "@/components/ui/toaster";
 
 const CreatePost = () => {
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const { error: toastError, success: toastSuccess } = useToast();
@@ -30,19 +31,16 @@ const CreatePost = () => {
       try {
         setGeneratingImg(true);
 
-        const response = await fetch(
-          "https://ai-morph-ju7z.onrender.com/api/v1/imgGenerate",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              prompt: form.prompt,
-            }),
-          }
-        );
+        const response = await fetch(`${API_BASE}/api/v1/imgGenerate`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: form.prompt,
+          }),
+        });
         const data = await response.json();
         toastSuccess("Image generated successfully");
         setForm({ ...form, photo: data.photo, admin: user._id });
@@ -64,17 +62,14 @@ const CreatePost = () => {
       setLoading(true);
 
       try {
-        const response = await fetch(
-          "https://ai-morph-ju7z.onrender.com/api/v1/post",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${cloudApiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(form),
-          }
-        );
+        const response = await fetch(`${API_BASE}/api/v1/post`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${cloudApiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        });
 
         await response.json();
         navigate("/home");

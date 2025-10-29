@@ -53,10 +53,11 @@ router.post("/", async (req, res) => {
     );
 
     // Set cookie
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, 
-      sameSite: "lax",
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       maxAge: 3600000,
     });
 
@@ -66,9 +67,7 @@ router.post("/", async (req, res) => {
       user: {
         ...user.toObject(),
         profilePicture: user.profilePicture
-          ? `data:image/png;base64,${user.profilePicture.toString(
-              "base64"
-            )}`
+          ? `data:image/png;base64,${user.profilePicture.toString("base64")}`
           : null,
       },
     });

@@ -13,6 +13,7 @@ import {
 
 const Register = () => {
   const { error, success, info } = useToast();
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const [showPassword, setShowPassword] = useState(false);
   const [user, setUser] = useState({
     firstName: "",
@@ -41,10 +42,12 @@ const Register = () => {
       user.firstName =
         user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1);
     }
+
     if (!user.email.trim()) {
       error("Email is required!");
       return;
     }
+
     if (user.password.length < 6) {
       error("Password must be at least 6 characters long!");
       return;
@@ -59,7 +62,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "https://ai-morph-ju7z.onrender.com/api/v1/create-user",
+        `${API_BASE}/api/v1/create-user`,
         {
           ...user,
           firstName: user.firstName.trim(),
@@ -74,26 +77,72 @@ const Register = () => {
         }
       );
 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-
+      // ✅ Handle success codes
       if (response.status === 200) {
         success("Registration successful!");
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         navigate("/home");
+      } else if (response.status === 201) {
+        success("User created successfully!");
+      } else if (response.status === 204) {
+        success("Request processed successfully (no content).");
       }
-    } catch (error) {
-      console.error("Register failed:", error);
-      error(error.response?.data?.message || "Something went wrong!");
+    } catch (err) {
+      console.error("Register failed:", err);
+      const status = err.response?.status;
+      const msg =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Something went wrong!";
+
+      // ✅ Status-specific toast messages
+      switch (status) {
+        case 400:
+          if (String(msg).toLowerCase().includes("otp")) {
+            error("❌ Incorrect OTP. Please try again.");
+          } else {
+            error("⚠️ Bad Request: " + msg);
+          }
+          break;
+        case 401:
+          error("🔒 Unauthorized. Please log in again.");
+          break;
+        case 403:
+          error("🚫 Forbidden. You don't have permission for this action.");
+          break;
+        case 404:
+          error("❓ Resource not found.");
+          break;
+        case 409:
+          error("⚠️ User already exists. Please log in instead.");
+          break;
+        case 500:
+          error("💥 Internal Server Error. Try again later.");
+          break;
+        case 502:
+          error("⚡ Bad Gateway. Server issue detected.");
+          break;
+        case 503:
+          error("🕓 Service Unavailable. Please try later.");
+          break;
+        case 504:
+          error("⏱️ Gateway Timeout. The server took too long to respond.");
+          break;
+        default:
+          error("⚠️ " + msg);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("https://ai-morph-ju7z.onrender.com/api/v1/get-user", {
+        .get(`${API_BASE}/api/v1/get-user`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -113,19 +162,24 @@ const Register = () => {
       return;
     }
     try {
-      const res = await axios.get(
-        "https://ai-morph-ju7z.onrender.com/api/v1/send-otp",
-        {
-          params: { email: user.email },
-        }
-      );
+      const res = await axios.get(`${API_BASE}/api/v1/send-otp`, {
+        params: { email: user.email },
+      });
       setSessionID(res?.data?.sessionID);
-    } catch (error) {
-      console.error("invalid OTP:", error);
-      error(error.response?.data?.message || "Something went wrong!");
-    } finally {
       setCount(1);
       info("OTP sent to your email!");
+    } catch (e) {
+      console.error("invalid OTP:", e);
+      const msg =
+        e.response?.data?.error ||
+        e.response?.data?.message ||
+        "Failed to send OTP";
+      const status = e.response?.status;
+      if (status === 409) {
+        error("User already exists");
+      } else {
+        error(msg);
+      }
     }
   };
 
