@@ -26,7 +26,7 @@ setSessionStore(store);
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:5173", 
+    origin: "https://ai-morph-rdn9.onrender.com", 
     credentials: true,
   })
 );
@@ -64,7 +64,7 @@ app.get("/", async (req, res) => {
 const startServer = async () => {
     try {
         connectDB(process.env.MONGODB_URL);
-        app.listen(8000, () =>
+        app.listen(process.env.PORT, () =>
             console.log("Server started")
         );
     } catch (error) {
