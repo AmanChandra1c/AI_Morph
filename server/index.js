@@ -26,7 +26,7 @@ setSessionStore(store);
 const app = express();
 app.use(
   cors({
-    origin: "https://ai-morph-rdn9.onrender.com", 
+    origin: "http://localhost:5173", 
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
