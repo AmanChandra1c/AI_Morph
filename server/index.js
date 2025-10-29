@@ -48,7 +48,7 @@ const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 300 });
 app.use(limiter);
 
 // CORS with dynamic origin for prod
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+const allowedOrigins = (process.env.CORS_ORIGINS || "https://ai-morph-792t.onrender.com")
   .split(",")
   .map((o) => o.trim());
 app.use(
