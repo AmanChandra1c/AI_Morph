@@ -63,7 +63,7 @@ app.get("/", async (req, res) => {
 const startServer = async () => {
   try {
     connectDB(process.env.MONGODB_URL);
-    app.listen(8000, () => console.log("Server started"));
+    app.listen(process.env.PORT, () => console.log("Server started"));
   } catch (error) {
     console.log(error);
   }
